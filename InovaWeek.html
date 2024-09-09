@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Verificação de Rede UVV</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            background-color: #f0f0f0;
+        }
+        .container {
+            text-align: center;
+            background-color: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            max-width: 80%;
+        }
+        #status {
+            margin-top: 20px;
+            font-weight: bold;
+        }
+        .spinner {
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid #3498db;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+            margin: 20px auto;
+        }
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        #retryButton {
+            display: none;
+            margin-top: 20px;
+            padding: 10px 20px;
+            background-color: #3498db;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Verificação de Rede UVV</h1>
+        <p>Estamos verificando se você está conectado à rede da UVV...</p>
+        <div class="spinner" id="spinner"></div>
+        <p id="status">Aguarde um momento...</p>
+        <button id="retryButton" onclick="checkNetworkAndRedirect()">Tentar Novamente</button>
+    </div>
+
+    <script>
+    function checkNetworkAndRedirect() {
+        document.getElementById("spinner").style.display = "block";
+        document.getElementById("status").innerHTML = "Aguarde um momento...";
+        document.getElementById("retryButton").style.display = "none";
+
+        fetch('https://api.ipify.org?format=json')
+            .then(response => response.json())
+            .then(data => {
+                var userIP = data.ip;
+                // Substitua "SEU_IP_DA_UVV" pelo IP real da rede Wi-Fi da UVV
+                var uvvIP = "187.12.85.253";
+                
+                if (userIP === uvvIP) {
+                    updateStatus("Rede UVV verificada. Redirecionando para o formulário...");
+                    setTimeout(function() {
+                        window.location.href = "https://forms.office.com/r/nVp6NT0D8e";
+                    }, 2000);
+                } else {
+                    updateStatus("Você não está conectado à rede Wi-Fi da UVV. Acesso negado.", true);
+                }
+            })
+            .catch(error => {
+                updateStatus("Erro ao verificar a rede. Por favor, tente novamente.", true);
+                console.error('Erro:', error);
+            });
+    }
+
+    function updateStatus(message, showRetry = false) {
+        document.getElementById("status").innerHTML = message;
+        document.getElementById("spinner").style.display = "none";
+        document.getElementById("retryButton").style.display = showRetry ? "inline-block" : "none";
+    }
+
+    // Inicia a verificação assim que a página carregar
+    window.onload = checkNetworkAndRedirect;
+    </script>
+	
+<script>
+document.addEventListener('contextmenu', function(e) {
+    e.preventDefault();
+});
+</script>
+
+<style>
+/* Impedir seleção de texto */
+body {
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+}
+</style>
+
+<script>
+// Impedir acesso ao "Inspecionar Elemento"
+document.addEventListener('keydown', function(event) {
+    if (event.key === 'F12' || (event.ctrlKey && event.shiftKey && event.key === 'I')) {
+        event.preventDefault();
+    }
+});
+</script>
+
+
+</body>
+</html>
